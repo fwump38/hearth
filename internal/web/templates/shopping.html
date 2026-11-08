@@ -1,0 +1,49 @@
+{{define "content"}}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0"><i class="bi bi-cart3"></i> Shopping list</h1>
+  <div class="d-flex gap-2">
+    <div class="form-check form-switch mb-0 align-self-center"><input class="form-check-input" type="checkbox" id="hide-done"><label class="form-check-label small" for="hide-done">Hide done</label></div>
+    <form method="post" action="/shopping/clear/all" onsubmit="return confirm('Clear the whole shopping list for everyone?')"><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Start over</button></form>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-8">{{template "shoplist" .Data}}</div>
+  <div class="col-lg-4">
+    <div class="card"><div class="card-body">
+      <form method="post" action="/shopping/manual" class="d-flex gap-2"><input class="form-control" type="text" name="text" placeholder="Add an item…" autocomplete="off" required><button class="btn btn-primary"><i class="bi bi-plus-lg"></i></button></form>
+    </div></div>
+    <div class="card mt-3"><div class="card-header fw-semibold">Recipes on the list</div>
+      <ul class="list-group list-group-flush" id="shop-recipes">
+        {{range .Data.Entries}}<li class="list-group-item d-flex justify-content-between align-items-center"><span><a href="/r/{{.Slug}}">{{.Title}}</a> <span class="text-body-secondary small">× {{.Servings}} servings</span></span>
+          <form method="post" action="/shopping/recipe/{{.ID}}/remove"><button class="btn btn-sm btn-outline-secondary" aria-label="Remove"><i class="bi bi-x-lg"></i></button></form></li>
+        {{else}}<li class="list-group-item text-body-secondary small">Nothing yet. Open a recipe and press “Shopping list”.</li>{{end}}
+      </ul></div>
+    <p class="small text-body-secondary mt-2">Optional ingredients are left out. Pantry staples (salt, water…) are listed separately at the bottom. Edit aisles and pantry in <a href="/settings">Settings</a>.</p>
+  </div>
+</div>
+<script>
+(function(){var cb=document.getElementById('hide-done');try{cb.checked=localStorage.getItem('hideDone')==='1';}catch(e){}
+function ap(){document.body.classList.toggle('hide-done',cb.checked);try{localStorage.setItem('hideDone',cb.checked?'1':'0');}catch(e){}}
+cb.addEventListener('change',ap);ap();})();
+</script>
+{{end}}
+
+{{define "shoplist"}}
+<div id="shop-list" hx-get="/shopping/list" hx-trigger="every 6s [!document.querySelector('#shop-list input[type=text]:focus')]" hx-swap="outerHTML">
+  <div class="small text-body-secondary mb-2">{{.Open}} to buy{{if .Done}} · {{.Done}} done{{end}}</div>
+  {{range .Groups}}
+    <div class="card mb-3 {{if eq .Aisle "Pantry"}}pantry{{end}}">
+      <div class="card-header fw-semibold py-2">{{.Aisle}}{{if eq .Aisle "Pantry"}} <span class="fw-normal small text-body-secondary">staples — check you have them</span>{{end}}</div>
+      <ul class="list-group list-group-flush">
+      {{range .Items}}
+        <li class="list-group-item shop-item {{if .Checked}}done{{end}} d-flex align-items-baseline gap-2">
+          <input class="form-check-input flex-shrink-0" type="checkbox" {{if .Checked}}checked{{end}} hx-post="/shopping/check?key={{.Key}}&on={{if .Checked}}0{{else}}1{{end}}" hx-target="#shop-list" hx-swap="outerHTML" aria-label="Done">
+          <span class="flex-grow-1"><span class="item-name">{{if .Qty}}<span class="fw-semibold">{{.Qty}}</span> {{end}}{{.Name}}</span>{{if .From}}<span class="d-block small text-body-secondary">{{join .From ", "}}</span>{{end}}</span>
+          {{if .Manual}}<form method="post" action="/shopping/manual/{{.ID}}/remove"><button class="btn btn-sm btn-link text-body-secondary" aria-label="Remove"><i class="bi bi-x-lg"></i></button></form>{{end}}
+        </li>
+      {{end}}
+      </ul>
+    </div>
+  {{else}}<p class="text-body-secondary">The list is empty.</p>{{end}}
+</div>
+{{end}}

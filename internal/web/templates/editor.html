@@ -1,0 +1,98 @@
+{{define "content"}}
+{{$vm := .Data}}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">{{if eq $vm.Mode "new"}}New recipe{{else if eq $vm.Mode "draft"}}Review imported recipe{{else}}Edit recipe{{end}}</h1>
+  {{if eq $vm.Mode "edit"}}<a class="btn btn-sm btn-outline-secondary" href="/r/{{$vm.Slug}}">Cancel</a>{{end}}
+</div>
+{{if $vm.Error}}<div class="alert alert-danger">{{$vm.Error}}</div>{{end}}
+{{if $vm.Notes}}<div class="alert alert-info"><strong>Importer notes</strong><ul class="mb-0">{{range $vm.Notes}}<li>{{.}}</li>{{end}}</ul></div>{{end}}
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <form method="post" action="{{$vm.Action}}" id="editor-form">
+      <input type="hidden" name="rev" value="{{$vm.Rev}}">
+      <div class="row g-2 mb-3">
+        <div class="col-12"><label class="form-label fw-semibold">Name</label><input class="form-control" name="title" value="{{$vm.Title}}" required></div>
+        <div class="col-12"><label class="form-label small">Original title(s) <span class="text-body-secondary">one per line</span></label><textarea class="form-control form-control-sm" name="aliases" rows="1">{{$vm.Aliases}}</textarea></div>
+        {{range $vm.Fields}}
+        <div class="{{if eq .Type "list"}}col-12{{else if eq .Key "source"}}col-12{{else}}col-6 col-md-4{{end}}">
+          <label class="form-label small fw-semibold">{{.Label}}{{if eq .Key "difficulty"}}{{if $vm.Suggest}} <a href="#" class="fw-normal" id="use-suggest" data-v="{{$vm.Suggest}}" title="Computed from steps, cookware and times">use {{$vm.Suggest}}</a>{{end}}{{end}}</label>
+          {{if eq .Type "enum"}}
+            <select class="form-select" name="m.{{.Key}}" id="m-{{.Key}}"><option value=""></option>{{$cur := .Value}}{{range .Options}}<option {{if eq . $cur}}selected{{end}}>{{.}}</option>{{end}}</select>
+          {{else if eq .Type "number"}}
+            <input class="form-control" type="number" min="1" name="m.{{.Key}}" value="{{.Value}}">
+          {{else if eq .Type "list"}}
+            <input class="form-control" name="m.{{.Key}}" value="{{.Value}}" list="taglist" placeholder="vegetarian, quick, pasta">
+          {{else if eq .Type "duration"}}
+            <input class="form-control" name="m.{{.Key}}" value="{{.Value}}" placeholder="20 minutes">
+          {{else}}
+            <input class="form-control" name="m.{{.Key}}" value="{{.Value}}">
+          {{end}}
+        </div>
+        {{end}}
+      </div>
+      <datalist id="taglist">{{range $vm.AllTags}}<option value="{{.}}">{{end}}</datalist>
+      <div class="mb-2 d-flex justify-content-between align-items-end">
+        <label class="form-label fw-semibold mb-0">Method <span class="text-body-secondary fw-normal small">Cooklang: <code>@ingredient{qty%unit}</code> <code>#cookware{}</code> <code>~{10%minutes}</code></span></label>
+        <a href="https://cooklang.org/docs/spec/" target="_blank" rel="noopener" class="small">Syntax</a>
+      </div>
+      <textarea class="form-control font-monospace" id="body" name="body" rows="18" spellcheck="true">{{$vm.Body}}</textarea>
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-primary"><i class="bi bi-check-lg"></i> {{if eq $vm.Mode "edit"}}Save{{else}}Create recipe{{end}}</button>
+        {{if eq $vm.Mode "draft"}}<button class="btn btn-outline-danger" formaction="/drafts/{{$vm.DraftID}}/discard" formnovalidate>Discard</button>{{end}}
+      </div>
+    </form>
+    {{if eq $vm.Mode "edit"}}
+    <form method="post" action="/r/{{$vm.Slug}}/delete" class="mt-4" onsubmit="return confirm('Delete this recipe? It can be restored from git history on the server.')"><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete recipe</button></form>
+    {{end}}
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card mb-3"><div class="card-header fw-semibold">Image</div><div class="card-body" id="imagepanel-wrap">{{if or $vm.Image.Base}}{{template "imagepanel" $vm.Image}}{{else}}<p class="text-body-secondary small mb-0">Save the recipe first, then add an image.</p>{{end}}</div></div>
+    <div class="card"><div class="card-header fw-semibold">Preview</div>
+      <div class="card-body" id="preview" hx-post="/preview" hx-trigger="load, input from:#editor-form delay:600ms" hx-include="#editor-form" hx-target="this" hx-swap="innerHTML"></div></div>
+  </div>
+</div>
+<script>
+document.addEventListener('click',function(e){var a=e.target.closest('#use-suggest');if(a){e.preventDefault();document.getElementById('m-difficulty').value=a.dataset.v;document.getElementById('editor-form').dispatchEvent(new Event('input'));}});
+</script>
+{{end}}
+
+{{define "imagepanel"}}
+<div id="imagepanel">
+  {{if .Msg}}<div class="alert alert-secondary py-1 small">{{.Msg}}</div>{{end}}
+  {{if .Src}}<img src="{{.Src}}" class="img-fluid rounded mb-2" style="max-height:220px" alt="">{{else}}<div class="text-body-secondary small mb-2">No image.</div>{{end}}
+  <form hx-post="{{.Base}}/image" hx-encoding="multipart/form-data" hx-target="#imagepanel" hx-swap="outerHTML" class="mb-2">
+    <label class="form-label small fw-semibold mb-1">Upload</label>
+    <div class="input-group input-group-sm"><input class="form-control" type="file" name="file" accept="image/*"><button class="btn btn-outline-primary">Upload</button></div>
+  </form>
+  <form hx-post="{{.Base}}/image" hx-target="#imagepanel" hx-swap="outerHTML" class="mb-2">
+    <label class="form-label small fw-semibold mb-1">…or image URL</label>
+    <div class="input-group input-group-sm"><input class="form-control" type="url" name="url" placeholder="https://…"><button class="btn btn-outline-primary">Fetch</button></div>
+  </form>
+  <div class="d-flex gap-2">
+    {{if .CanPick}}<button class="btn btn-sm btn-outline-secondary" hx-get="{{.Base}}/image/candidates" hx-target="#imagepanel" hx-swap="outerHTML"><i class="bi bi-images"></i> Pick from source page</button>{{end}}
+    {{if .Src}}<button class="btn btn-sm btn-outline-danger" hx-post="{{.Base}}/image/delete" hx-target="#imagepanel" hx-swap="outerHTML"><i class="bi bi-trash"></i> Remove</button>{{end}}
+  </div>
+  {{if .Candidates}}
+  <div class="row row-cols-3 g-2 mt-2">
+    {{$base := .Base}}{{range .Candidates}}
+    <div class="col"><form hx-post="{{$base}}/image" hx-target="#imagepanel" hx-swap="outerHTML"><input type="hidden" name="url" value="{{.}}"><button class="btn p-0 border-0 w-100" title="Use this image"><img src="{{.}}" referrerpolicy="no-referrer" loading="lazy" class="img-fluid rounded" style="aspect-ratio:1;object-fit:cover;width:100%" alt=""></button></form></div>
+    {{end}}
+  </div>
+  {{end}}
+</div>
+{{end}}
+
+{{define "preview"}}
+{{if .Warnings}}<div class="alert alert-warning py-2 small"><strong>Check:</strong><ul class="mb-0">{{range .Warnings}}<li>{{.}}</li>{{end}}</ul></div>{{end}}
+{{with .VM}}
+<h2 class="h6">Ingredients</h2>
+<ul class="small ps-3">{{range .List}}<li><strong>{{.Qty}}</strong> {{.Name}}{{if .Optional}} <em>(optional)</em>{{end}}{{if .Note}} <span class="text-body-secondary">({{.Note}})</span>{{end}}</li>{{end}}</ul>
+{{if .Cookware}}<div class="mb-2">{{range .Cookware}}<span class="cookware">{{.}}</span> {{end}}</div>{{end}}
+<h2 class="h6 mt-3">Method</h2>
+{{range .Sections}}{{if .Name}}<div class="fw-semibold mt-2">{{.Name}}</div>{{end}}
+<ol class="list-unstyled">{{range .Steps}}<li class="d-flex gap-2 mb-2"><span class="step-num">{{.N}}</span><span>{{range .Segs}}{{template "seg" .}}{{end}}</span></li>{{end}}</ol>
+{{range .Notes}}<div class="alert alert-secondary py-1 small">{{.}}</div>{{end}}{{end}}
+{{end}}
+{{end}}

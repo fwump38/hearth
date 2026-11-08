@@ -1,0 +1,25 @@
+{{define "content"}}
+{{$vm := .Data}}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">History <small class="text-body-secondary fs-6">{{$vm.R.Title}}</small></h1>
+  <a class="btn btn-sm btn-outline-secondary" href="/r/{{$vm.R.Slug}}">Back to recipe</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="list-group">
+    {{range $vm.Commits}}
+      <a class="list-group-item list-group-item-action {{if eq .Hash $vm.Hash}}active{{end}}" href="/r/{{$vm.R.Slug}}/history/{{.Hash}}">
+        <div class="fw-semibold">{{.Message}}</div><div class="small opacity-75">{{.Author}} · {{.When.Format "Jan 2, 2006 15:04"}}</div></a>
+    {{else}}<div class="list-group-item text-body-secondary">No history yet.</div>{{end}}
+    </div>
+  </div>
+  <div class="col-lg-8">
+    {{if $vm.Hash}}
+    <div class="d-flex justify-content-between align-items-center mb-2"><h2 class="h5 mb-0">Changes since this version</h2>
+      <form method="post" action="/r/{{$vm.R.Slug}}/restore/{{$vm.Hash}}" onsubmit="return confirm('Restore this version? The current version stays in history.')"><button class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-counterclockwise"></i> Restore this version</button></form></div>
+    <pre class="diff border rounded p-2 small">{{range $vm.Diff}}<span class="d{{printf "%c" .Op}}">{{printf "%c" .Op}} {{.Text}}</span>
+{{end}}</pre>
+    {{else}}<p class="text-body-secondary">Pick a version to compare it with the current recipe.</p>{{end}}
+  </div>
+</div>
+{{end}}

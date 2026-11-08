@@ -1,0 +1,19 @@
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Views</h1>
+  <a class="btn btn-primary" href="/views/new"><i class="bi bi-plus-lg"></i> New view</a>
+</div>
+<p class="text-body-secondary">Views are saved filters, sorting and grouping. Those marked “home” appear as tiles with an image collage.</p>
+<div class="list-group">
+  {{range .Data.Views}}
+  <div class="list-group-item d-flex align-items-center gap-2">
+    <div class="flex-grow-1"><a class="fw-semibold text-decoration-none" href="/v/{{.Slug}}">{{if .Icon}}<i class="bi bi-{{.Icon}}"></i> {{end}}{{.Name}}</a>
+      <span class="badge bg-body-secondary text-body border ms-1">{{.Display}}</span>{{if .GroupBy}} <span class="badge bg-body-secondary text-body border">group: {{.GroupBy}}</span>{{end}}{{if .ShowHome}} <span class="badge text-bg-primary">home</span>{{end}}</div>
+    <form method="post" action="/views/{{.Slug}}/move/up"><button class="btn btn-sm btn-outline-secondary" aria-label="Move up"><i class="bi bi-arrow-up"></i></button></form>
+    <form method="post" action="/views/{{.Slug}}/move/down"><button class="btn btn-sm btn-outline-secondary" aria-label="Move down"><i class="bi bi-arrow-down"></i></button></form>
+    <a class="btn btn-sm btn-outline-secondary" href="/views/{{.Slug}}/edit"><i class="bi bi-pencil"></i></a>
+    <form method="post" action="/views/{{.Slug}}/delete" onsubmit="return confirm('Delete view “{{.Name}}”?')"><button class="btn btn-sm btn-outline-danger" aria-label="Delete"><i class="bi bi-trash"></i></button></form>
+  </div>
+  {{end}}
+</div>
+{{end}}

@@ -1,0 +1,19 @@
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Recipes <small class="text-body-secondary fs-6">{{.Data.Total}} total</small></h1>
+  <a href="/views" class="btn btn-sm btn-outline-secondary"><i class="bi bi-funnel"></i> Manage views</a>
+</div>
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+  {{range .Data.Tiles}}
+  <div class="col">
+    <a href="/v/{{.View.Slug}}" class="card tile h-100 text-decoration-none shadow-sm">
+      {{template "collage" .Images}}
+      <div class="card-body p-2">
+        <div class="fw-semibold text-body">{{if .View.Icon}}<i class="bi bi-{{.View.Icon}} me-1"></i>{{end}}{{.View.Name}}</div>
+        <div class="small text-body-secondary">{{.Count}} recipe{{if ne .Count 1}}s{{end}}</div>
+      </div>
+    </a>
+  </div>
+  {{end}}
+</div>
+{{end}}

@@ -1,0 +1,71 @@
+{{define "content"}}
+{{$d := .Data}}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">{{if $d.View.Icon}}<i class="bi bi-{{$d.View.Icon}} me-1"></i>{{end}}{{$d.View.Name}} <small class="text-body-secondary fs-6">{{$d.Total}} recipe{{if ne $d.Total 1}}s{{end}}</small></h1>
+  <div class="d-flex gap-2">
+    {{if $d.Custom}}<a class="btn btn-sm btn-outline-secondary" href="/v/{{$d.View.Slug}}"><i class="bi bi-x-lg"></i> Reset</a>{{end}}
+    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="offcanvas" data-bs-target="#filters"><i class="bi bi-sliders"></i> Filter &amp; sort</button>
+    <a class="btn btn-sm btn-outline-secondary" href="/views/{{$d.View.Slug}}/edit"><i class="bi bi-pencil"></i> Edit view</a>
+  </div>
+</div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filters">
+  <div class="offcanvas-header"><h5 class="offcanvas-title">Filter &amp; sort</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+  <div class="offcanvas-body">
+    <form method="get" action="/v/{{$d.View.Slug}}" id="filter-form">
+      <div class="mb-3"><input class="form-control" type="search" name="q" value="{{$d.Q}}" placeholder="Search name, tag, ingredient…"></div>
+      {{range $d.Facets}}{{$f := .}}
+      <div class="mb-3"><div class="fw-semibold small mb-1">{{.Label}}</div>
+        <div class="d-flex flex-wrap gap-1">
+        {{range .Options}}<input type="checkbox" class="btn-check" id="f-{{$f.Key}}-{{.Value}}" name="f.{{$f.Key}}" value="{{.Value}}" {{if .Selected}}checked{{end}} autocomplete="off"><label class="btn btn-sm btn-outline-secondary" for="f-{{$f.Key}}-{{.Value}}">{{.Value}} <span class="opacity-50">{{.Count}}</span></label>{{end}}
+        </div></div>
+      {{end}}
+      <div class="mb-3"><div class="fw-semibold small mb-1">Tags <span class="text-body-secondary fw-normal">(must have all)</span></div>
+        <div class="d-flex flex-wrap gap-1 tag-box">
+        {{range $d.Tags}}<input type="checkbox" class="btn-check" id="t-{{.Value}}" name="tag" value="{{.Value}}" {{if .Selected}}checked{{end}} autocomplete="off"><label class="btn btn-sm btn-outline-secondary" for="t-{{.Value}}">{{.Value}} <span class="opacity-50">{{.Count}}</span></label>{{end}}
+        </div></div>
+      <div class="row g-2 mb-3">
+        <div class="col-8"><label class="form-label small fw-semibold">Sort by</label>
+          <select class="form-select" name="sort"><option value="">View default</option>{{range $d.SortKeys}}<option value="{{.Key}}" {{if eq .Key $d.Sort}}selected{{end}}>{{.Label}}</option>{{end}}</select></div>
+        <div class="col-4"><label class="form-label small fw-semibold">Order</label>
+          <select class="form-select" name="dir"><option value="asc">Asc</option><option value="desc" {{if $d.Desc}}selected{{end}}>Desc</option></select></div>
+      </div>
+      <div class="mb-3"><label class="form-label small fw-semibold">Group by</label>
+        <select class="form-select" name="group"><option value="" {{if not $d.Custom}}selected{{end}}>View default{{if $d.View.GroupBy}} ({{$d.View.GroupBy}}){{end}}</option><option value="none">No grouping</option>{{range $d.Groupable}}<option value="{{.Key}}" {{if eq .Key $d.GroupBy}}selected{{end}}>{{.Label}}</option>{{end}}</select></div>
+      <div class="d-flex gap-2"><button class="btn btn-primary flex-fill">Apply</button><a class="btn btn-outline-secondary" href="/v/{{$d.View.Slug}}">Reset</a></div>
+    </form>
+    {{if $d.Custom}}
+    <hr><form method="post" action="/views/save-adhoc" class="d-flex gap-2">
+      <input type="hidden" name="base" value="{{$d.View.Slug}}"><input type="hidden" name="query" value="{{$d.Query}}">
+      <input class="form-control" name="name" placeholder="Save as new view…" required>
+      <button class="btn btn-outline-primary">Save</button>
+    </form>
+    {{end}}
+  </div>
+</div>
+
+{{if eq $d.View.Display "table"}}
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead><tr><th><a class="text-reset text-decoration-none" href="?sort=title{{if and (eq $d.Sort "title") (not $d.Desc)}}&dir=desc{{end}}">Name</a></th>
+  {{range $d.Cols}}<th class="text-nowrap">{{if .Sort}}<a class="text-reset text-decoration-none" href="?sort={{.Key}}{{if and (eq $d.Sort .Key) (not $d.Desc)}}&dir=desc{{end}}">{{.Label}}{{if eq $d.Sort .Key}} <i class="bi bi-caret-{{if $d.Desc}}down{{else}}up{{end}}-fill"></i>{{end}}</a>{{else}}{{.Label}}{{end}}</th>{{end}}</tr></thead>
+  <tbody>
+  {{range $d.Rows}}<tr><td><a href="/r/{{.R.Slug}}" class="fw-semibold text-decoration-none">{{.R.Title}}</a></td>
+    {{range .Cells}}<td>{{if .List}}{{range .List}}<span class="badge bg-body-secondary text-body border">{{.}}</span> {{end}}{{else}}{{.Text}}{{end}}</td>{{end}}</tr>{{end}}
+  </tbody>
+</table></div>
+{{else}}
+{{range $d.Groups}}
+  {{if .Name}}
+  <div class="group-head d-flex align-items-center gap-3 mt-4 mb-2">
+    <div class="group-collage">{{template "collage" .Images}}</div>
+    <h2 class="h5 mb-0">{{.Name}} <small class="text-body-secondary fs-6">{{len .Cards}}</small></h2>
+  </div>
+  {{end}}
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+    {{range .Cards}}{{template "card" .}}{{end}}
+  </div>
+{{end}}
+{{if eq $d.Total 0}}<p class="text-body-secondary mt-4">No recipes match.</p>{{end}}
+{{end}}
+{{end}}

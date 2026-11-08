@@ -1,0 +1,16 @@
+{{define "content"}}
+{{$p := .Data.P}}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">{{$p.Title}} <span class="badge bg-body-secondary text-body border fs-6">{{$p.Source}}</span></h1>
+  <a class="btn btn-sm btn-outline-secondary" href="/admin/upgrade">All proposals</a>
+</div>
+{{if $p.Flags}}<div class="alert alert-warning"><strong>Needs a look:</strong><ul class="mb-0">{{range $p.Flags}}<li>{{.}}</li>{{end}}</ul></div>{{else}}<div class="alert alert-success py-2">Same ingredients, quantities, cookware, steps and wording — only markup changed.</div>{{end}}
+{{if .Data.Stale}}<div class="alert alert-danger">This recipe was edited after the proposal was made, so it can’t be applied. Reject it and re-run the upgrade.</div>{{end}}
+<pre class="diff border rounded p-2 small">{{range .Data.Diff}}<span class="d{{printf "%c" .Op}}">{{printf "%c" .Op}} {{.Text}}</span>
+{{end}}</pre>
+<div class="d-flex gap-2">
+  {{if not .Data.Stale}}<form method="post" action="/admin/upgrade/{{$p.Slug}}/accept"><button class="btn btn-primary"><i class="bi bi-check-lg"></i> Accept</button></form>{{end}}
+  <form method="post" action="/admin/upgrade/{{$p.Slug}}/reject"><button class="btn btn-outline-danger">Reject</button></form>
+  <a class="btn btn-outline-secondary" href="/r/{{$p.Slug}}">Open recipe</a>
+</div>
+{{end}}

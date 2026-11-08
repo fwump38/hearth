@@ -1,0 +1,49 @@
+{{define "content"}}
+{{$vm := .Data}}
+<h1 class="h3 mb-3">Settings</h1>
+{{if $vm.Msg}}<div class="alert alert-success py-2">{{$vm.Msg}}</div>{{end}}
+{{if $vm.NewToken}}<div class="alert alert-warning"><strong>New API token</strong> (shown once — copy it now):<pre class="mb-0 user-select-all">{{$vm.NewToken}}</pre></div>{{end}}
+
+<form method="post" action="/settings/reload" class="mb-3"><button class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-repeat"></i> Reload recipes from disk</button> <span class="small text-body-secondary">after running <code>cookserver import</code> or <code>upgrade</code> from the command line</span></form>
+<div class="accordion" id="acc">
+  <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#c-fields">Recipe fields</button></h2>
+    <div id="c-fields" class="accordion-collapse collapse show" data-bs-parent="#acc"><div class="accordion-body">
+      <p class="small text-body-secondary">Fields drive the recipe header, editor, filters, sorting and grouping. Custom frontmatter keys you add here are stored in the recipe file.</p>
+      <form method="post" action="/settings/fields">
+        <div class="table-responsive"><table class="table table-sm align-middle">
+          <thead><tr><th>Key</th><th>Label</th><th>Type</th><th>Allowed values (enum)</th><th>Header</th><th>Filter</th><th>Sort</th><th>Group</th><th>Edit</th><th></th></tr></thead>
+          <tbody>
+          {{range $i, $f := $vm.Fields}}
+          <tr><td><code>{{$f.Key}}</code>{{if $f.Virtual}} <span class="badge bg-body-secondary text-body-secondary border">computed</span>{{end}}</td>
+            <td><input class="form-control form-control-sm" name="f.{{$i}}.label" value="{{$f.Label}}"></td>
+            <td class="small">{{$f.Type}}</td>
+            <td>{{if eq (printf "%s" $f.Type) "enum"}}<input class="form-control form-control-sm" name="f.{{$i}}.values" value="{{join $f.Values ", "}}">{{end}}</td>
+            <td><input type="checkbox" class="form-check-input" name="f.{{$i}}.header" {{if $f.Header}}checked{{end}}></td>
+            <td><input type="checkbox" class="form-check-input" name="f.{{$i}}.filter" {{if $f.Filter}}checked{{end}}></td>
+            <td><input type="checkbox" class="form-check-input" name="f.{{$i}}.sort" {{if $f.Sort}}checked{{end}}></td>
+            <td><input type="checkbox" class="form-check-input" name="f.{{$i}}.group" {{if $f.Group}}checked{{end}}></td>
+            <td>{{if not $f.Virtual}}<input type="checkbox" class="form-check-input" name="f.{{$i}}.editable" {{if $f.Editable}}checked{{end}}>{{end}}</td>
+            <td>{{if not (index $vm.Core $f.Key)}}<label class="small text-danger"><input type="checkbox" class="form-check-input" name="f.{{$i}}.delete"> remove</label>{{end}}</td></tr>
+          {{end}}
+          <tr class="table-group-divider"><td><input class="form-control form-control-sm" name="new.key" placeholder="new key"></td><td><input class="form-control form-control-sm" name="new.label" placeholder="Label"></td>
+            <td colspan="2"><select class="form-select form-select-sm" name="new.type">{{range $vm.Types}}<option>{{.}}</option>{{end}}</select></td><td colspan="5" class="small text-body-secondary">Add a custom field</td></tr>
+          </tbody></table></div>
+        <button class="btn btn-primary">Save fields</button>
+      </form></div></div></div>
+
+  <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#c-shop">Shopping list: aisles &amp; pantry</button></h2>
+    <div id="c-shop" class="accordion-collapse collapse" data-bs-parent="#acc"><div class="accordion-body">
+      <form method="post" action="/settings/shopping">
+        <div class="row g-3"><div class="col-lg-8"><label class="form-label fw-semibold">Aisles <span class="fw-normal small text-body-secondary">(Cooklang <code>aisle.conf</code> format: <code>[Aisle]</code> then <code>name|synonym</code> lines)</span></label><textarea class="form-control font-monospace" rows="16" name="aisles">{{$vm.Aisles}}</textarea></div>
+        <div class="col-lg-4"><label class="form-label fw-semibold">Pantry staples <span class="fw-normal small text-body-secondary">one per line</span></label><textarea class="form-control font-monospace" rows="16" name="pantry">{{$vm.Pantry}}</textarea></div></div>
+        <button class="btn btn-primary mt-3">Save</button>
+      </form></div></div></div>
+
+  <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#c-api">API tokens &amp; import</button></h2>
+    <div id="c-api" class="accordion-collapse collapse" data-bs-parent="#acc"><div class="accordion-body">
+      <p class="small">Tokens let the Claude skill send an imported recipe to this app as a draft: <code>POST {{$vm.BaseURL}}/api/import-draft</code> with <code>Authorization: Bearer &lt;token&gt;</code>. The server-side URL importer {{if $vm.Claude}}<span class="badge text-bg-success">is configured</span>{{else}}<span class="badge text-bg-warning">needs ANTHROPIC_API_KEY</span>{{end}}.</p>
+      <ul class="list-group mb-3">{{range $vm.Tokens}}<li class="list-group-item d-flex justify-content-between align-items-center"><span>{{if .Label}}{{.Label}}{{else}}(no label){{end}} <span class="small text-body-secondary">{{.Created}}</span></span><form method="post" action="/settings/tokens/{{.ID}}/delete"><button class="btn btn-sm btn-outline-danger">Revoke</button></form></li>{{else}}<li class="list-group-item text-body-secondary small">No tokens.</li>{{end}}</ul>
+      <form method="post" action="/settings/tokens" class="d-flex gap-2"><input class="form-control" name="label" placeholder="Label (e.g. Claude Code)"><button class="btn btn-outline-primary">Create token</button></form>
+    </div></div></div>
+</div>
+{{end}}

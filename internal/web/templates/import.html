@@ -1,0 +1,21 @@
+{{define "content"}}
+<h1 class="h3 mb-3"><i class="bi bi-cloud-download"></i> Import a recipe</h1>
+{{if not .Data.Enabled}}<div class="alert alert-warning">URL import is not configured (set <code>ANTHROPIC_API_KEY</code> on the server). You can still <a href="/new">create a recipe by hand</a>.</div>{{end}}
+<div class="row"><div class="col-lg-8">
+<ul class="nav nav-tabs mb-3"><li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#t-url">From a URL</button></li><li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#t-text">Paste text</button></li></ul>
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="t-url">
+    <form hx-post="/import" hx-target="#import-result" hx-indicator="#spin" hx-disabled-elt="find button">
+      <div class="input-group"><input class="form-control" type="url" name="url" placeholder="https://example.com/best-recipe" required><button class="btn btn-primary">Convert</button></div>
+    </form></div>
+  <div class="tab-pane fade" id="t-text">
+    <form hx-post="/import" hx-target="#import-result" hx-indicator="#spin" hx-disabled-elt="find button">
+      <textarea class="form-control mb-2" name="text" rows="12" placeholder="Paste the ingredients and steps here…" required></textarea><button class="btn btn-primary">Convert</button>
+    </form></div>
+</div>
+<div id="spin" class="htmx-indicator mt-3 d-flex align-items-center gap-2 text-body-secondary"><div class="spinner-border spinner-border-sm"></div> Converting with Claude… this takes about 20–60 seconds.</div>
+<div id="import-result"></div>
+<p class="small text-body-secondary mt-4">The converted recipe opens as a draft so you can check the ingredients, steps, tags and image before saving. Model: {{.Data.Model}}.</p>
+</div></div>
+<style>.htmx-indicator{display:none}.htmx-request.htmx-indicator,.htmx-request .htmx-indicator{display:flex!important}</style>
+{{end}}

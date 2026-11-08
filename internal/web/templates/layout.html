@@ -1,0 +1,67 @@
+{{define "layout"}}<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{if .Title}}{{.Title}} · {{end}}Cookbook</title>
+<script>
+(function(){try{var t=localStorage.getItem('theme')||'auto';var d=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-bs-theme',d?'dark':'light');}catch(e){}})();
+</script>
+<link rel="stylesheet" href="/static/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="/static/vendor/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>">
+</head>
+<body class="{{if eq .Nav "cook"}}cook-mode{{end}}" {{if eq .Nav "cook"}}data-cook="1"{{end}}>
+{{if ne .Nav "cook"}}
+<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+  <div class="container-xl">
+    <a class="navbar-brand fw-semibold" href="/"><i class="bi bi-egg-fried"></i> Cookbook</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link {{if eq .Nav "home"}}active{{end}}" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/v/all">All</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq .Nav "shopping"}}active{{end}}" href="/shopping"><i class="bi bi-cart3"></i> Shopping</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq .Nav "import"}}active{{end}}" href="/import"><i class="bi bi-cloud-download"></i> Import</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq .Nav "new"}}active{{end}}" href="/new"><i class="bi bi-plus-lg"></i> New</a></li>
+      </ul>
+      <form class="d-flex me-lg-3 my-2 my-lg-0" action="/search" role="search">
+        <input class="form-control" type="search" name="q" placeholder="Search recipes…" aria-label="Search">
+      </form>
+      <div class="d-flex align-items-center gap-2">
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary" data-bs-toggle="dropdown" aria-label="Theme" title="Theme"><i class="bi bi-circle-half" id="theme-icon"></i></button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><button class="dropdown-item" data-theme="light"><i class="bi bi-sun"></i> Light</button></li>
+            <li><button class="dropdown-item" data-theme="dark"><i class="bi bi-moon-stars"></i> Dark</button></li>
+            <li><button class="dropdown-item" data-theme="auto"><i class="bi bi-circle-half"></i> Auto</button></li>
+          </ul>
+        </div>
+        {{with .User}}
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> <span class="d-none d-xl-inline">{{.Display}}</span></button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/settings"><i class="bi bi-gear"></i> Settings</a></li>
+            <li><a class="dropdown-item" href="/views"><i class="bi bi-funnel"></i> Manage views</a></li>
+            <li><a class="dropdown-item" href="/admin/upgrade"><i class="bi bi-magic"></i> Cooklang upgrade</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><form method="post" action="/auth/logout"><button class="dropdown-item">Sign out</button></form></li>
+          </ul>
+        </div>
+        {{end}}
+      </div>
+    </div>
+  </div>
+</nav>
+{{end}}
+<main class="container-xl py-3 {{if eq .Nav "cook"}}cook-main{{end}}">
+{{template "content" .}}
+</main>
+<div id="timer-tray" class="timer-tray" aria-live="polite"></div>
+<script src="/static/vendor/bootstrap.bundle.min.js"></script>
+<script src="/static/vendor/htmx.min.js"></script>
+<script src="/static/app.js"></script>
+{{block "scripts" .}}{{end}}
+</body>
+</html>{{end}}

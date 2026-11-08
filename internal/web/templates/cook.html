@@ -1,0 +1,46 @@
+{{define "content"}}
+{{$vm := .Data}}{{$r := $vm.R}}
+<div id="cook" data-slug="{{$r.Slug}}" data-total="{{$vm.Steps}}">
+  <div class="cook-top d-flex align-items-center gap-2">
+    <a class="btn btn-outline-secondary" href="/r/{{$r.Slug}}?servings={{$vm.Servings}}" aria-label="Exit cook mode"><i class="bi bi-x-lg"></i></a>
+    <div class="flex-grow-1 text-truncate fw-semibold">{{$r.Title}}</div>
+    <span class="badge text-bg-secondary">{{$vm.Servings}} servings</span>
+    <button type="button" class="btn btn-outline-secondary" id="toggle-wake" aria-pressed="false" title="Keep screen awake"><i class="bi bi-brightness-high"></i></button>
+    <div class="dropdown"><button class="btn btn-outline-secondary" data-bs-toggle="dropdown" aria-label="Theme"><i class="bi bi-circle-half"></i></button>
+      <ul class="dropdown-menu dropdown-menu-end"><li><button class="dropdown-item" data-theme="light">Light</button></li><li><button class="dropdown-item" data-theme="dark">Dark</button></li><li><button class="dropdown-item" data-theme="auto">Auto</button></li></ul></div>
+  </div>
+  <div class="progress cook-progress my-2" role="progressbar"><div class="progress-bar" id="cook-bar" style="width:0%"></div></div>
+
+  <div class="cook-slides" id="slides">
+    {{range $vm.Sections}}{{$sec := .}}
+      {{range .Steps}}
+      <section class="cook-slide" data-slide>
+        <div class="text-body-secondary small mb-2">{{if $sec.Name}}{{$sec.Name}} · {{end}}Step {{.N}} of {{$vm.Steps}}</div>
+        {{if .Ings}}<ul class="cook-ings list-unstyled">{{range .Ings}}<li><span class="fw-semibold">{{.Qty}}</span> {{.Name}}{{if .Note}} <span class="text-body-secondary small">({{.Note}})</span>{{end}}{{if .Ref}} <em class="small">(portion)</em>{{end}}</li>{{end}}</ul>{{end}}
+        <p class="cook-text">{{range .Segs}}{{template "seg" .}}{{end}}</p>
+        {{if .Cookware}}<div class="d-flex flex-wrap gap-1">{{range .Cookware}}<span class="cookware">{{.}}</span>{{end}}</div>{{end}}
+      </section>
+      {{end}}
+    {{end}}
+    <section class="cook-slide" data-slide>
+      <h2 class="h3">All done! 🎉</h2>
+      {{range $vm.Sections}}{{range .Notes}}<div class="alert alert-secondary note-callout">{{.}}</div>{{end}}{{end}}
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        {{template "toggle" (dict "Slug" $r.Slug "Kind" "tried" "On" $vm.Tried)}}
+        {{template "toggle" (dict "Slug" $r.Slug "Kind" "favorite" "On" $vm.Fav)}}
+        <a class="btn btn-primary" href="/r/{{$r.Slug}}">Back to recipe</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="cook-nav d-flex gap-2">
+    <button class="btn btn-lg btn-outline-secondary flex-fill" id="prev"><i class="bi bi-chevron-left"></i> Back</button>
+    <button class="btn btn-lg btn-outline-secondary" id="show-ings" data-bs-toggle="offcanvas" data-bs-target="#all-ings" aria-label="All ingredients"><i class="bi bi-list-ul"></i></button>
+    <button class="btn btn-lg btn-primary flex-fill" id="next">Next <i class="bi bi-chevron-right"></i></button>
+  </div>
+</div>
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="all-ings" style="height:70vh">
+  <div class="offcanvas-header"><h5 class="offcanvas-title">All ingredients</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+  <div class="offcanvas-body"><ul class="list-group list-group-flush">{{range $vm.List}}<li class="list-group-item"><span class="fw-semibold">{{.Qty}}</span> {{.Name}}{{if .Note}} <span class="text-body-secondary small">({{.Note}})</span>{{end}}</li>{{end}}</ul></div>
+</div>
+{{end}}

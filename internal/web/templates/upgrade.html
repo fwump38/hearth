@@ -1,0 +1,19 @@
+{{define "content"}}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">Cooklang upgrade</h1>
+  {{if .Data.Clean}}<form method="post" action="/admin/upgrade/accept-all" onsubmit="return confirm('Accept all {{.Data.Clean}} unflagged upgrades? Each becomes its own git commit and can be reverted from the recipe history.')"><button class="btn btn-primary"><i class="bi bi-check2-all"></i> Accept all {{.Data.Clean}} unflagged</button></form>{{end}}
+</div>
+<p class="text-body-secondary">Proposed rewrites that use the full Cooklang syntax (optional <code>@?</code>, divided <code>@&amp;</code>, named timers, fixed quantities, recipe links). A check confirms the same ingredients, quantities, cookware, steps and wording; anything different is flagged for you to look at.</p>
+{{if .Data.Pending}}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Recipe</th><th>By</th><th>Change</th><th>Check</th><th></th></tr></thead>
+  <tbody>{{range .Data.Pending}}
+  <tr><td><a href="/admin/upgrade/{{.Slug}}" class="fw-semibold text-decoration-none">{{.Title}}</a></td>
+    <td><span class="badge bg-body-secondary text-body border">{{.Source}}</span></td>
+    <td class="small"><span class="text-success">+{{.Added}}</span> <span class="text-danger">−{{.Removed}}</span></td>
+    <td>{{if .Flags}}<span class="badge text-bg-warning" title="{{join .Flags "; "}}">{{len .Flags}} flag{{if ne (len .Flags) 1}}s{{end}}</span> <span class="small text-body-secondary">{{index .Flags 0}}</span>{{else}}<span class="badge text-bg-success">clean</span>{{end}}</td>
+    <td class="text-nowrap"><a class="btn btn-sm btn-outline-secondary" href="/admin/upgrade/{{.Slug}}">Review</a></td></tr>
+  {{end}}</tbody></table></div>
+{{else}}<div class="alert alert-secondary">No pending proposals. Generate them with <code>cookserver upgrade</code> (rules) and <code>cookserver upgrade -claude</code> (judgment calls).</div>{{end}}
+{{if .Data.Rejected}}<details class="mt-4"><summary class="text-body-secondary">{{len .Data.Rejected}} rejected</summary><ul>{{range .Data.Rejected}}<li><a href="/admin/upgrade/{{.Slug}}">{{.Title}}</a></li>{{end}}</ul></details>{{end}}
+{{end}}

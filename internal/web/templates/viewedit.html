@@ -1,0 +1,42 @@
+{{define "content"}}
+{{$vm := .Data}}{{$v := $vm.View}}
+<h1 class="h3 mb-3">{{if $vm.New}}New view{{else}}Edit view{{end}}</h1>
+{{if $vm.Error}}<div class="alert alert-danger">{{$vm.Error}}</div>{{end}}
+<form method="post" action="/views/save" id="view-form">
+  <input type="hidden" name="id" value="{{$v.ID}}"><input type="hidden" name="slug" value="{{$v.Slug}}">
+  <input type="hidden" name="filter" id="filter-json" value="{{$vm.FilterJSON}}">
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label fw-semibold">Name</label><input class="form-control" name="name" value="{{$v.Name}}" required></div>
+    <div class="col-6 col-md-3"><label class="form-label fw-semibold">Icon <a class="small fw-normal" href="https://icons.getbootstrap.com/" target="_blank" rel="noopener">names</a></label><input class="form-control" name="icon" value="{{$v.Icon}}" placeholder="heart-fill"></div>
+    <div class="col-6 col-md-3"><label class="form-label fw-semibold">Display</label><select class="form-select" name="display"><option value="cards" {{if ne $v.Display "table"}}selected{{end}}>Cards</option><option value="table" {{if eq $v.Display "table"}}selected{{end}}>Table</option></select></div>
+
+    <div class="col-12"><div class="card"><div class="card-header d-flex justify-content-between align-items-center"><span class="fw-semibold">Filter</span>
+      <span class="small">Match <select id="logic" class="form-select form-select-sm d-inline-block w-auto"><option value="and">all</option><option value="or">any</option></select> of:</span></div>
+      <div class="card-body"><div id="conds" class="d-flex flex-column gap-2"></div>
+        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="add-cond"><i class="bi bi-plus"></i> Add condition</button>
+        <div class="small text-body-secondary mt-2" id="groups-note" hidden>This view also has nested condition groups, which are kept as they are.</div>
+      </div></div></div>
+
+    <div class="col-md-6"><label class="form-label fw-semibold">Sort</label>
+      <div class="row g-2">
+        {{$s1 := ""}}{{$d1 := ""}}{{$s2 := ""}}{{$d2 := ""}}
+        {{range $idx, $k := $v.Sort}}{{if eq $idx 0}}{{$s1 = $k.Field}}{{if $k.Desc}}{{$d1 = "desc"}}{{end}}{{else if eq $idx 1}}{{$s2 = $k.Field}}{{if $k.Desc}}{{$d2 = "desc"}}{{end}}{{end}}{{end}}
+        <div class="col-8"><select class="form-select" name="sort1"><option value="">—</option>{{range $vm.Fields}}{{if .Sort}}<option value="{{.Key}}" {{if eq .Key $s1}}selected{{end}}>{{.Label}}</option>{{end}}{{end}}</select></div>
+        <div class="col-4"><select class="form-select" name="dir1"><option value="asc">Asc</option><option value="desc" {{if eq $d1 "desc"}}selected{{end}}>Desc</option></select></div>
+        <div class="col-8"><select class="form-select" name="sort2"><option value="">then by…</option>{{range $vm.Fields}}{{if .Sort}}<option value="{{.Key}}" {{if eq .Key $s2}}selected{{end}}>{{.Label}}</option>{{end}}{{end}}</select></div>
+        <div class="col-4"><select class="form-select" name="dir2"><option value="asc">Asc</option><option value="desc" {{if eq $d2 "desc"}}selected{{end}}>Desc</option></select></div>
+      </div></div>
+    <div class="col-md-6"><label class="form-label fw-semibold">Group by</label>
+      <select class="form-select" name="group_by"><option value="">No grouping</option>{{range $vm.Fields}}{{if .Group}}<option value="{{.Key}}" {{if eq .Key $v.GroupBy}}selected{{end}}>{{.Label}}</option>{{end}}{{end}}</select>
+      <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" name="show_home" id="show_home" {{if $v.ShowHome}}checked{{end}}><label class="form-check-label" for="show_home">Show as a tile on the home page</label></div></div>
+
+    <div class="col-12"><label class="form-label fw-semibold">Fields shown on cards / table columns</label>
+      <div class="d-flex flex-wrap gap-1">{{range $vm.Fields}}{{$k := .Key}}<input type="checkbox" class="btn-check" id="cf-{{.Key}}" name="fields" value="{{.Key}}" {{if in .Key $v.Fields}}checked{{end}} autocomplete="off"><label class="btn btn-sm btn-outline-secondary" for="cf-{{.Key}}">{{.Label}}</label>{{end}}</div>
+      <div class="form-text">Shown in the order of the field list. Table view uses these as columns.</div></div>
+  </div>
+  <div class="d-flex gap-2 mt-4"><button class="btn btn-primary">Save view</button><a class="btn btn-outline-secondary" href="/views">Cancel</a></div>
+</form>
+<datalist id="tags-dl">{{range $vm.Tags}}<option value="{{.}}">{{end}}</datalist>
+<script id="schema-json" type="application/json">{{$vm.SchemaJSON}}</script>
+<script src="/static/viewedit.js"></script>
+{{end}}
