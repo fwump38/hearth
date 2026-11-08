@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/img/hearth.svg" alt="Hearth logo" width="120"></p>
+<p align="center"><img src="docs/img/hearth.png" alt="Hearth logo" width="120"></p>
 
 # Hearth — a self-hosted, Cooklang-compatible recipe server
 
