@@ -184,8 +184,6 @@
     if (!root) return;
     assignIds();
     const slug = root.dataset.slug;
-    document.body.classList.toggle('show-qty', !!store.get('inlineQty', false));
-    const q = $('#toggle-qty'); if (q) { q.classList.toggle('active', document.body.classList.contains('show-qty')); }
     const split = $('.recipe-split', root);
     const lay = store.get('layout', 'both');
     if (split) split.dataset.layout = lay;
@@ -214,7 +212,9 @@
       const on = !document.body.classList.contains('show-qty');
       document.body.classList.toggle('show-qty', on);
       e.target.closest('#toggle-qty').classList.toggle('active', on);
-      store.set('inlineQty', on);
+      e.target.closest('#toggle-qty').setAttribute('aria-pressed', on);
+      // remembered per user on the server (applies to every recipe and device)
+      fetch('/prefs', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'inline_qty=' + (on ? '1' : '0') }).catch(() => {});
       return;
     }
     const step = e.target.closest('.step');

@@ -1,12 +1,18 @@
 {{define "collage"}}<div class="collage c{{len .}}">{{range .}}<img src="/img/{{.Slug}}?w=300" alt="" loading="lazy">{{else}}<div class="collage-empty"><i class="bi bi-egg-fried"></i></div>{{end}}</div>{{end}}
 
 {{define "toggle"}}{{if eq .Kind "favorite"}}
-<button type="button" class="{{if .Compact}}btn btn-sm btn-light rounded-circle shadow-sm fav-btn{{else}}btn btn-outline-danger{{end}}{{if .On}} active{{end}}" hx-post="/r/{{.Slug}}/favorite{{if .Compact}}?compact=1{{end}}" hx-swap="outerHTML" aria-pressed="{{.On}}" title="Favorite"><i class="bi {{if .On}}bi-heart-fill text-danger{{else}}bi-heart{{end}}"></i>{{if not .Compact}} Favorite{{end}}</button>
+<button type="button" class="{{if .Compact}}btn btn-sm btn-light rounded-circle shadow-sm fav-btn{{else}}btn {{if .On}}btn-danger{{else}}btn-outline-danger{{end}}{{end}}" hx-post="/r/{{.Slug}}/favorite{{if .Compact}}?compact=1{{end}}" hx-swap="outerHTML" aria-pressed="{{.On}}" title="{{if .On}}Remove from favorites{{else}}Add to favorites{{end}}"><i class="bi {{if .On}}bi-heart-fill{{else}}bi-heart{{end}}{{if and .Compact .On}} text-danger{{end}}"></i>{{if not .Compact}} Favorite{{end}}</button>
 {{else}}
-<button type="button" class="btn btn-outline-success{{if .On}} active{{end}}" hx-post="/r/{{.Slug}}/tried" hx-swap="outerHTML" aria-pressed="{{.On}}" title="Mark as tried"><i class="bi {{if .On}}bi-check-circle-fill{{else}}bi-check-circle{{end}}"></i> {{if .On}}Tried{{else}}Mark tried{{end}}</button>
+<button type="button" class="btn {{if .On}}btn-success{{else}}btn-outline-success{{end}}" hx-post="/r/{{.Slug}}/tried" hx-swap="outerHTML" aria-pressed="{{.On}}" title="{{if .On}}Mark as not tried{{else}}Mark as tried{{end}}"><i class="bi {{if .On}}bi-check-circle-fill{{else}}bi-check-circle{{end}}"></i> Tried</button>
 {{end}}{{end}}
 
-{{define "badges"}}{{range .}}{{if .List}}{{range .List}}<span class="badge bg-body-secondary text-body border">{{.}}</span> {{end}}{{else if .Text}}<span class="badge bg-body-secondary text-body border" title="{{.Label}}">{{.Text}}</span> {{end}}{{end}}{{end}}
+{{define "badges"}}{{range .}}{{if .List}}{{range .List}}<span class="badge bg-body-secondary text-body border">{{.}}</span> {{end}}{{else if .Text}}<span class="badge bg-body-secondary text-body border" title="{{.Label}}">{{if eq .Kind "duration"}}<i class="bi bi-clock"></i> <span class="text-body-secondary">{{.Label}}</span> {{end}}{{.Text}}</span> {{end}}{{end}}{{end}}
+
+{{/* Recipe page header: timings get their own labelled strip; classification and tags are filter links. */}}
+{{define "meta"}}
+<div class="meta-times">{{range .}}{{if and (eq .Kind "duration") .Text}}<div class="meta-time"><div class="meta-label">{{.Label}}</div><div class="meta-val"><i class="bi bi-clock"></i> {{.Text}}</div></div>{{end}}{{end}}</div>
+<div class="meta-badges">{{range .}}{{$k := .Key}}{{if eq .Kind "duration"}}{{else if .List}}{{range .List}}<a class="badge badge-link" href="{{filterHref $k .}}" title="Show all recipes tagged {{.}}">{{.}}</a>{{end}}{{else if and (eq .Kind "enum") .Text}}<a class="badge badge-link badge-class" href="{{filterHref $k .Text}}" title="{{.Label}}: show all {{.Text}}">{{.Text}}</a>{{else if .Text}}<span class="badge bg-body-secondary text-body border">{{.Label}}: {{.Text}}</span>{{end}}{{end}}</div>
+{{end}}
 
 {{define "card"}}
 <div class="col">

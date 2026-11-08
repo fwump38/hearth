@@ -59,7 +59,7 @@ Everyone who can sign in can view, edit, import and manage views. Favorites/trie
 
 ## Deploy on Unraid (Portainer stack)
 
-1. The image is published to `ghcr.io/fwump38/hearth:latest` by GitHub Actions on every push to `main` (make the package public once, under the repo's Packages settings). In Portainer, create a stack from `compose.yaml`.
+1. Images are published to `ghcr.io/fwump38/hearth` by GitHub Actions (make the package public once, under the repo's Packages settings). Releases use semantic versioning: pushing a tag such as `v1.2.3` publishes `1.2.3`, `1.2`, `1` and `latest`; pushes to `main` publish only `edge` and a `sha-…` tag. Pin a version in the stack with `HEARTH_VERSION=1.2` (default `latest`). The running version is shown at the bottom of *Settings*. In Portainer, create a stack from `compose.yaml`.
 2. In Portainer: *Stacks → Add stack*, paste `compose.yaml`, set the variables from `.env.example` in the stack's environment.
 3. Put your reverse proxy (HTTPS) in front of port 8080. Data lives in `${APPDATA}` (default `/mnt/user/appdata/hearth`);
    back that folder up — `recipes/` is a git repository, `app.db` holds users, favorites, views, shopping list.
@@ -118,3 +118,9 @@ Layout: `internal/cooklang` (parser, scaling), `internal/recipes` (git-backed st
 `internal/web` (handlers, templates, static assets — no JS build step).
 
 Future: Home Assistant shopping-list sync — researched in [docs/home-assistant-sync.md](docs/home-assistant-sync.md).
+
+## Releasing
+
+```bash
+git tag v0.2.0 && git push origin v0.2.0   # CI builds and pushes 0.2.0, 0.2 and latest
+```

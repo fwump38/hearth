@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strings"
 	"sync/atomic"
@@ -114,6 +115,13 @@ func (s *Server) parseTemplates() error {
 
 func funcMap() template.FuncMap {
 	return template.FuncMap{
+		"asset": assetURL,
+		"filterHref": func(key, val string) string {
+			if key == "tags" {
+				return "/search?tag=" + url.QueryEscape(val)
+			}
+			return "/search?" + url.QueryEscape("f."+key) + "=" + url.QueryEscape(val)
+		},
 		"dur":   recipes.FormatDuration,
 		"join":  strings.Join,
 		"json":  func(v any) template.JS { b, _ := json.Marshal(v); return template.JS(b) },
@@ -151,6 +159,9 @@ type Page struct {
 	Nav   string
 	Data  any
 	Flash string
+	// InlineQty is the signed-in user's saved "show quantities inline" preference.
+	InlineQty bool
+	Version   string
 }
 
 func (s *Server) render(w http.ResponseWriter, r *http.Request, name, title, nav string, data any) {
@@ -160,7 +171,7 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, name, title, nav
 		return
 	}
 	var buf bytes.Buffer
-	if err := t.ExecuteTemplate(&buf, "layout", Page{Title: title, User: auth.FromContext(r.Context()), Nav: nav, Data: data}); err != nil {
+	if err := t.ExecuteTemplate(&buf, "layout", Page{Title: title, User: auth.FromContext(r.Context()), Nav: nav, Data: data, InlineQty: s.inlineQty(r), Version: Version}); err != nil {
 		log.Printf("render %s: %v", name, err)
 		http.Error(w, "render error", 500)
 		return
@@ -203,7 +214,7 @@ func (s *Server) author(r *http.Request) recipes.Author {
 // ---- auth middleware ----
 
 func (s *Server) publicPath(p string) bool {
-	return p == "/healthz" || strings.HasPrefix(p, "/static/") || strings.HasPrefix(p, "/auth/")
+	return p == "/healthz" || p == "/favicon.ico" || strings.HasPrefix(p, "/apple-touch-icon") || strings.HasPrefix(p, "/static/") || strings.HasPrefix(p, "/auth/")
 }
 
 func (s *Server) requireUser(next http.Handler) http.Handler {

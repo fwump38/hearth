@@ -57,6 +57,9 @@ type viewPage struct {
 	Custom    bool
 	Query     string
 	Rows      []rowVM
+	Display   string
+	CardsHref string
+	TableHref string
 }
 
 type rowVM struct {
@@ -217,9 +220,33 @@ func (s *Server) renderView(w http.ResponseWriter, r *http.Request, v views.View
 		}
 	}
 
+	// The view's display mode can be overridden per request (?display=cards|table).
+	disp := v.Display
+	if d := q.Get("display"); d == "cards" || d == "table" {
+		disp = d
+		custom = custom || d != v.Display
+	}
+	page.Display = disp
+	href := func(d string) string {
+		nq := url.Values{}
+		for k, vs := range q {
+			if k != "display" {
+				nq[k] = vs
+			}
+		}
+		nq.Set("display", d)
+		return "?" + nq.Encode()
+	}
+	page.CardsHref, page.TableHref = href("cards"), href("table")
+	page.Custom = custom
+
 	cols := v.Fields
-	if v.Display == "table" && len(cols) == 0 {
-		cols = []string{"course", "difficulty", "total time", "tags"}
+	cardFields := v.Fields
+	if disp == "table" && (v.Display != "table" || len(cols) == 0) {
+		cols = []string{"course", "season", "difficulty", "total time", "tags", "favorite", "tried"}
+	}
+	if disp == "cards" && v.Display == "table" {
+		cardFields = []string{"difficulty", "total time"}
 	}
 	for _, c := range cols {
 		if f, ok := sch.Get(c); ok {
@@ -231,7 +258,7 @@ func (s *Server) renderView(w http.ResponseWriter, r *http.Request, v views.View
 		gv := groupVM{Name: g.Name, Images: views.GroupCollage(g, 4)}
 		for _, rec := range g.Recipes {
 			page.Total++
-			if v.Display == "table" {
+			if disp == "table" {
 				row := rowVM{R: rec, Fav: us.Favorite(rec.Slug)}
 				for _, c := range page.Cols {
 					row.Cells = append(row.Cells, s.fieldDisplay(rec, c.Key, us))
@@ -240,7 +267,7 @@ func (s *Server) renderView(w http.ResponseWriter, r *http.Request, v views.View
 				continue
 			}
 			card := cardVM{R: rec, Fav: us.Favorite(rec.Slug)}
-			for _, key := range v.Fields {
+			for _, key := range cardFields {
 				if hf := s.fieldDisplay(rec, key, us); hf.Text != "" || len(hf.List) > 0 {
 					card.Fields = append(card.Fields, hf)
 				}
@@ -320,7 +347,11 @@ func (s *Server) handleToggle(table string) http.HandlerFunc {
 func (s *Server) routes() {
 	m := s.mux
 	m.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("ok")) })
-	m.Handle("GET /static/", http.FileServerFS(staticFS))
+	m.Handle("GET /static/", staticHandler())
+	m.HandleFunc("GET /favicon.ico", rootIcon("favicon.ico"))
+	m.HandleFunc("GET /apple-touch-icon.png", rootIcon("apple-touch-icon.png"))
+	m.HandleFunc("GET /apple-touch-icon-precomposed.png", rootIcon("apple-touch-icon.png"))
+	m.HandleFunc("POST /prefs", s.handlePrefs)
 	m.HandleFunc("GET /auth/login", s.handleLogin)
 	m.HandleFunc("GET /auth/callback", s.handleCallback)
 	m.HandleFunc("POST /auth/logout", s.handleLogout)

@@ -18,7 +18,7 @@ func SeedViews() []View {
 		card("Haven't Tried", "havent-tried", "question-circle", Filter{Conds: []Cond{{Field: "tried", Op: "is", Value: "false"}, veg}}, byCreated, "difficulty"),
 	}
 	table := View{
-		Slug: "table", Name: "Table View", Icon: "table", Sort: byCreated, Display: "table", ShowHome: false,
+		Slug: "table", Name: "Table View", Icon: "table", Sort: byCreated, Display: "table", ShowHome: true,
 		Fields: []string{"total time", "favorite", "difficulty", "season", "prep time", "cook time", "tried", "source", "tags", "course", "created"},
 	}
 	vs = append(vs, table)

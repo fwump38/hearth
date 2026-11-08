@@ -54,6 +54,8 @@ type HeaderField struct {
 	Label string
 	Text  string
 	List  []string
+	Kind  string // bool, duration, enum, list, number, date, text, url
+	On    bool   // for bool fields
 }
 
 // RecipeVM is everything the recipe/cook templates need.
@@ -156,7 +158,7 @@ func (s *Server) buildStep(st cooklang.Step, factor float64) StepVM {
 	return out
 }
 
-var skipHeader = map[string]bool{"title": true, "aliases": true, "source": true, "image source": true, "created": true, "tags": true, "servings": true, "favorite": true, "tried": true}
+var skipHeader = map[string]bool{"title": true, "aliases": true, "source": true, "image source": true, "created": true, "servings": true, "favorite": true, "tried": true}
 
 // fieldDisplay renders any schema (or custom) field of a recipe for display.
 func (s *Server) fieldDisplay(r *recipes.Recipe, key string, u views.UserState) HeaderField {
@@ -165,9 +167,10 @@ func (s *Server) fieldDisplay(r *recipes.Recipe, key string, u views.UserState) 
 		f = views.Field{Key: key, Label: strings.Title(key), Type: views.TypeText} //nolint:staticcheck
 	}
 	v := s.eng().Schema.ValueOf(r, key, u)
-	hf := HeaderField{Key: key, Label: f.Label}
+	hf := HeaderField{Key: key, Label: f.Label, Kind: string(f.Type)}
 	switch f.Type {
 	case views.TypeBool:
+		hf.On = v.Bool
 		if v.Bool {
 			hf.Text = "Yes"
 		}

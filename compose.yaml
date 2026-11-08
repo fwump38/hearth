@@ -2,7 +2,7 @@
 # Put the secrets in the stack's environment variables (Portainer "Environment variables"), not in this file.
 services:
   hearth:
-    image: ghcr.io/fwump38/hearth:latest   # built by .github/workflows/docker.yml
+    image: ghcr.io/fwump38/hearth:${HEARTH_VERSION:-latest}   # semver tags, see README "Releasing"
     container_name: hearth
     restart: unless-stopped
     user: "${PUID:-99}:${PGID:-100}"   # Unraid default: nobody:users

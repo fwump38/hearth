@@ -7,7 +7,7 @@
       <h1 class="h2 mb-1">{{$r.Title}}</h1>
       {{if $r.Aliases}}<div class="text-body-secondary small mb-1">{{join $r.Aliases " · "}}</div>{{end}}
       {{if $r.Source}}<div class="small mb-2"><a href="{{$r.Source}}" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right"></i> Source</a></div>{{end}}
-      <div class="d-flex flex-wrap gap-1 mb-3 header-badges">{{template "badges" $vm.Header}}</div>
+      <div class="mb-3">{{template "meta" $vm.Header}}</div>
       <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-primary" href="/r/{{$r.Slug}}/cook?servings={{$vm.Servings}}"><i class="bi bi-play-fill"></i> Cook</a>
         {{template "toggle" (dict "Slug" $r.Slug "Kind" "favorite" "On" $vm.Fav)}}
@@ -40,7 +40,7 @@
         <input type="radio" class="btn-check" name="layout" id="lay-ing" value="ing" autocomplete="off"><label class="btn btn-sm btn-outline-secondary" for="lay-ing">Ingredients</label>
         <input type="radio" class="btn-check" name="layout" id="lay-steps" value="steps" autocomplete="off"><label class="btn btn-sm btn-outline-secondary" for="lay-steps">Steps</label>
       </div>
-      <button type="button" class="btn btn-sm btn-outline-secondary" id="toggle-qty" aria-pressed="false" title="Show quantities inline in steps"><i class="bi bi-123"></i> Inline qty</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary{{if .InlineQty}} active{{end}}" id="toggle-qty" aria-pressed="{{.InlineQty}}" title="Show quantities inline in steps"><i class="bi bi-123"></i> Inline qty</button>
       <button type="button" class="btn btn-sm btn-outline-secondary" id="toggle-wake" aria-pressed="false" title="Keep screen awake"><i class="bi bi-brightness-high"></i> Keep awake</button>
     </div>
   </div>

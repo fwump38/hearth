@@ -38,5 +38,5 @@
 </form>
 <datalist id="tags-dl">{{range $vm.Tags}}<option value="{{.}}">{{end}}</datalist>
 <script id="schema-json" type="application/json">{{$vm.SchemaJSON}}</script>
-<script src="/static/viewedit.js"></script>
+<script src="{{asset "/static/viewedit.js"}}"></script>
 {{end}}
