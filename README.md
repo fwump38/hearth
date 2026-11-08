@@ -57,7 +57,7 @@ Everyone who can sign in can view, edit, import and manage views. Favorites/trie
 
 ## Deploy on Unraid (Portainer stack)
 
-1. Copy this folder to the NAS (or push the image to a registry and replace `build: .` with `image:` in `compose.yaml`).
+1. The image is published to `ghcr.io/fwump38/cooklang:latest` by GitHub Actions on every push to `main` (make the package public once, under the repo's Packages settings). In Portainer, create a stack from `compose.yaml`.
 2. In Portainer: *Stacks → Add stack*, paste `compose.yaml`, set the variables from `.env.example` in the stack's environment.
 3. Put your reverse proxy (HTTPS) in front of port 8080. Data lives in `${APPDATA}` (default `/mnt/user/appdata/cookbook`);
    back that folder up — `recipes/` is a git repository, `app.db` holds users, favorites, views, shopping list.

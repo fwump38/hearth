@@ -2,14 +2,14 @@
 # Put the secrets in the stack's environment variables (Portainer "Environment variables"), not in this file.
 services:
   cookbook:
-    build: .                     # or: image: ghcr.io/<you>/cookbook:latest once you push one
+    image: ghcr.io/fwump38/cooklang:latest   # built by .github/workflows/docker.yml
     container_name: cookbook
     restart: unless-stopped
     user: "${PUID:-99}:${PGID:-100}"   # Unraid default: nobody:users
     ports:
       - "8080:8080"
     volumes:
-      - ${APPDATA:-/mnt/user/appdata/cookbook}:/data
+      - ${APPDATA:-/mnt/user/appdata/cooklang}:/data
     environment:
       BASE_URL: ${BASE_URL}                         # public URL, e.g. https://recipes.example.com
       OIDC_ISSUER: ${OIDC_ISSUER}                   # e.g. https://auth.example.com/application/o/cookbook/
