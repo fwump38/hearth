@@ -81,3 +81,6 @@ a.ing:hover { text-decoration: underline; }
 .shop-item.done .item-name { text-decoration: line-through; opacity: .5; }
 .hide-done .shop-item.done { display: none; }
 .pantry { opacity: .85; }
+
+/* Navbar logo: silhouette mask so it follows the text colour in light and dark themes */
+.brand-mark{display:inline-block;width:1.7rem;height:1.7rem;margin-right:.15rem;vertical-align:text-bottom;background-color:currentColor;-webkit-mask:url(/static/icons/logo-mask.png) center/contain no-repeat;mask:url(/static/icons/logo-mask.png) center/contain no-repeat}

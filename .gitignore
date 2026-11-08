@@ -4,3 +4,4 @@ bin/
 .env
 dist/recipe-to-cooklang/
 dist/
+.DS_Store
