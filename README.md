@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/img/hearth.svg" alt="Hearth logo" width="120"></p>
+
 # Hearth — a self-hosted, Cooklang-compatible recipe server
 
 A single Go binary (one container, one `/data` volume) for browsing, cooking, editing, importing and shopping for
