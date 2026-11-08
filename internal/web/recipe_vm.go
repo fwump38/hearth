@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
-	"github.com/dmirch/cooklang/internal/recipes"
-	"github.com/dmirch/cooklang/internal/views"
+	"github.com/fwump38/hearth/internal/cooklang"
+	"github.com/fwump38/hearth/internal/recipes"
+	"github.com/fwump38/hearth/internal/views"
 )
 
 // Seg is one rendered piece of a step.

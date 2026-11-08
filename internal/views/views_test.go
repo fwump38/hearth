@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/recipes"
+	"github.com/fwump38/hearth/internal/recipes"
 )
 
 type us struct{ fav, tried map[string]bool }

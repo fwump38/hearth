@@ -3,7 +3,7 @@ package shopping
 import (
 	"testing"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
+	"github.com/fwump38/hearth/internal/cooklang"
 )
 
 func rec(t *testing.T, body string) *cooklang.Recipe {

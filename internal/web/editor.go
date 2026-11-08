@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/importer"
-	"github.com/dmirch/cooklang/internal/recipes"
-	"github.com/dmirch/cooklang/internal/views"
+	"github.com/fwump38/hearth/internal/importer"
+	"github.com/fwump38/hearth/internal/recipes"
+	"github.com/fwump38/hearth/internal/views"
 )
 
 type editField struct {

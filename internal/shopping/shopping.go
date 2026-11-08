@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
+	"github.com/fwump38/hearth/internal/cooklang"
 )
 
 // Source is a recipe added to the list at some scale.

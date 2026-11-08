@@ -1,4 +1,4 @@
-module github.com/dmirch/cooklang
+module github.com/fwump38/hearth
 
 go 1.26.2
 

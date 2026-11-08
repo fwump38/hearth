@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/importer"
-	"github.com/dmirch/cooklang/internal/recipes"
-	"github.com/dmirch/cooklang/internal/upgrade"
+	"github.com/fwump38/hearth/internal/importer"
+	"github.com/fwump38/hearth/internal/recipes"
+	"github.com/fwump38/hearth/internal/upgrade"
 )
 
 type batchState struct {

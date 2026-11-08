@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/recipes"
+	"github.com/fwump38/hearth/internal/recipes"
 )
 
 // FieldType is how a field is compared, sorted and edited.

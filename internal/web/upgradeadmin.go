@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/dmirch/cooklang/internal/recipes"
-	"github.com/dmirch/cooklang/internal/upgrade"
+	"github.com/fwump38/hearth/internal/recipes"
+	"github.com/fwump38/hearth/internal/upgrade"
 )
 
 func (s *Server) upgrades() upgrade.Store {

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
+	"github.com/fwump38/hearth/internal/cooklang"
 	"gopkg.in/yaml.v3"
 )
 

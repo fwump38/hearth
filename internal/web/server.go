@@ -16,10 +16,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/auth"
-	"github.com/dmirch/cooklang/internal/recipes"
-	"github.com/dmirch/cooklang/internal/shopping"
-	"github.com/dmirch/cooklang/internal/views"
+	"github.com/fwump38/hearth/internal/auth"
+	"github.com/fwump38/hearth/internal/recipes"
+	"github.com/fwump38/hearth/internal/shopping"
+	"github.com/fwump38/hearth/internal/views"
 )
 
 //go:embed templates/*.html

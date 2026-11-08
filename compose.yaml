@@ -1,18 +1,18 @@
 # Portainer / docker compose stack for Unraid.
 # Put the secrets in the stack's environment variables (Portainer "Environment variables"), not in this file.
 services:
-  cookbook:
-    image: ghcr.io/fwump38/cooklang:latest   # built by .github/workflows/docker.yml
-    container_name: cookbook
+  hearth:
+    image: ghcr.io/fwump38/hearth:latest   # built by .github/workflows/docker.yml
+    container_name: hearth
     restart: unless-stopped
     user: "${PUID:-99}:${PGID:-100}"   # Unraid default: nobody:users
     ports:
       - "8080:8080"
     volumes:
-      - ${APPDATA:-/mnt/user/appdata/cooklang}:/data
+      - ${APPDATA:-/mnt/user/appdata/hearth}:/data
     environment:
       BASE_URL: ${BASE_URL}                         # public URL, e.g. https://recipes.example.com
-      OIDC_ISSUER: ${OIDC_ISSUER}                   # e.g. https://auth.example.com/application/o/cookbook/
+      OIDC_ISSUER: ${OIDC_ISSUER}                   # e.g. https://auth.example.com/application/o/hearth/
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
       OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
       OIDC_SCOPES: ${OIDC_SCOPES:-openid profile email}   # add 'groups' only if your provider needs it for the groups claim

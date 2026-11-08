@@ -11,8 +11,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
-	"github.com/dmirch/cooklang/internal/recipes"
+	"github.com/fwump38/hearth/internal/cooklang"
+	"github.com/fwump38/hearth/internal/recipes"
 )
 
 // VaultOptions configures the one-time Obsidian import.

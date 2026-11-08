@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dmirch/cooklang/internal/db"
-	"github.com/dmirch/cooklang/internal/recipes"
+	"github.com/fwump38/hearth/internal/db"
+	"github.com/fwump38/hearth/internal/recipes"
 )
 
 const crisp = "---\ntitle: Apple Crisp\ncourse: Dessert\nseason: Fall\ntags:\n  - vegetarian\n  - baking\ndifficulty: Easy\nprep time: 20 minutes\ncook time: 45 minutes\nservings: 4\ncreated: 2026-11-01T12:00:00\n---\n= Filling\n\nPreheat the #oven{} to 350°F. Toss @apples{4%medium} with @?nutmeg{=1%pinch} and @sugar{1/2%cup}.\n\nBake for ~bake{45%minutes}.\n\n> Storage: 3 days.\n"

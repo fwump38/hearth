@@ -1,4 +1,4 @@
-# Cookbook — a self-hosted Cooklang recipe server
+# Hearth — a self-hosted, Cooklang-compatible recipe server
 
 A single Go binary (one container, one `/data` volume) for browsing, cooking, editing, importing and shopping for
 [Cooklang](https://cooklang.org) recipes. Works on phones and laptops, signs in through OIDC (Authentik), and replaces the
@@ -29,7 +29,7 @@ Obsidian Cooklang plugin + `Recipes.base`.
 | Variable | Meaning |
 |---|---|
 | `BASE_URL` | Public URL, e.g. `https://recipes.example.com` (used for the OIDC redirect; `https` ⇒ secure cookies) |
-| `OIDC_ISSUER` | e.g. `https://auth.example.com/application/o/cookbook/` |
+| `OIDC_ISSUER` | e.g. `https://auth.example.com/application/o/hearth/` |
 | `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` | From the Authentik provider |
 | `OIDC_SCOPES` | Default `openid profile email` |
 | `OIDC_ALLOWED_GROUPS` | Optional, comma separated; users must be in one of these (needs a `groups` claim) |
@@ -49,7 +49,7 @@ The server refuses to start without either `OIDC_ISSUER` or `AUTH_DEV_USER`.
    - **Signing key**: pick a certificate (RS256). Without one Authentik signs with HS256, which this app rejects.
    - Scopes: `openid`, `profile`, `email` (Authentik puts the `groups` claim in the `profile` mapping).
    - If your Authentik version has *Post logout redirect URIs*, add `https://recipes.example.com/auth/loggedout`.
-2. *Applications → Create*: slug `cookbook`, provider = the one above. Restrict who may sign in with a policy/group binding,
+2. *Applications → Create*: slug `hearth`, provider = the one above. Restrict who may sign in with a policy/group binding,
    and/or set `OIDC_ALLOWED_GROUPS`.
 3. `OIDC_ISSUER` = `https://<authentik-host>/application/o/<slug>/`.
 
@@ -57,9 +57,9 @@ Everyone who can sign in can view, edit, import and manage views. Favorites/trie
 
 ## Deploy on Unraid (Portainer stack)
 
-1. The image is published to `ghcr.io/fwump38/cooklang:latest` by GitHub Actions on every push to `main` (make the package public once, under the repo's Packages settings). In Portainer, create a stack from `compose.yaml`.
+1. The image is published to `ghcr.io/fwump38/hearth:latest` by GitHub Actions on every push to `main` (make the package public once, under the repo's Packages settings). In Portainer, create a stack from `compose.yaml`.
 2. In Portainer: *Stacks → Add stack*, paste `compose.yaml`, set the variables from `.env.example` in the stack's environment.
-3. Put your reverse proxy (HTTPS) in front of port 8080. Data lives in `${APPDATA}` (default `/mnt/user/appdata/cookbook`);
+3. Put your reverse proxy (HTTPS) in front of port 8080. Data lives in `${APPDATA}` (default `/mnt/user/appdata/hearth`);
    back that folder up — `recipes/` is a git repository, `app.db` holds users, favorites, views, shopping list.
 4. The container runs as `99:100` (Unraid's nobody:users) by default; change `PUID`/`PGID` if needed.
 

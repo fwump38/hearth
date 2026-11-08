@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
+	"github.com/fwump38/hearth/internal/cooklang"
 )
 
 // Recipe is a loaded recipe with derived, typed metadata.

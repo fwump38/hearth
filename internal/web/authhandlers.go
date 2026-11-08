@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/auth"
+	"github.com/fwump38/hearth/internal/auth"
 )
 
 const oidcCookie = "cook_oidc"

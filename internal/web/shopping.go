@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dmirch/cooklang/internal/auth"
-	"github.com/dmirch/cooklang/internal/shopping"
+	"github.com/fwump38/hearth/internal/auth"
+	"github.com/fwump38/hearth/internal/shopping"
 )
 
 type shopEntry struct {

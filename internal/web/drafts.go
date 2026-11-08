@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/auth"
+	"github.com/fwump38/hearth/internal/auth"
 )
 
 // Draft is an unsaved recipe (from import) with an optional pending image.

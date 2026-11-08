@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
+	"github.com/fwump38/hearth/internal/cooklang"
 )
 
 var (

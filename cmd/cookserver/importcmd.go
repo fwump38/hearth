@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dmirch/cooklang/internal/importer"
+	"github.com/fwump38/hearth/internal/importer"
 )
 
 func importVault(ctx context.Context, vault, attach, out, email string, skip bool) (*importer.Report, error) {

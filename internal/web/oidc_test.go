@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dmirch/cooklang/internal/auth"
-	"github.com/dmirch/cooklang/internal/db"
-	"github.com/dmirch/cooklang/internal/recipes"
+	"github.com/fwump38/hearth/internal/auth"
+	"github.com/fwump38/hearth/internal/db"
+	"github.com/fwump38/hearth/internal/recipes"
 	"github.com/go-jose/go-jose/v4"
 	"github.com/go-jose/go-jose/v4/jwt"
 )

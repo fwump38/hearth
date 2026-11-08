@@ -1,4 +1,4 @@
-/* Cookbook client: theme, timers, wake lock, recipe + cook mode helpers. */
+/* Hearth client: theme, timers, wake lock, recipe + cook mode helpers. */
 (function () {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s);

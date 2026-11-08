@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dmirch/cooklang/internal/cooklang"
+	"github.com/fwump38/hearth/internal/cooklang"
 )
 
 func stepText(r *cooklang.Recipe) []string {

@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dmirch/cooklang/internal/auth"
-	"github.com/dmirch/cooklang/internal/views"
+	"github.com/fwump38/hearth/internal/auth"
+	"github.com/fwump38/hearth/internal/views"
 	"golang.org/x/oauth2"
 )
 
